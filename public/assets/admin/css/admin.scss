@@ -1,0 +1,106 @@
+$color1:#CBDEED;
+$color2:#113F63;
+$color3:#7a85db;
+$color5:#213e6f;
+.btn-mycolor{
+	background: linear-gradient($color1,$color3);
+	box-shadow: 2px 2px 3px 5px #CBDEED;
+  text-transform: uppercase;
+  border-radius: 5px;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+}
+.btn-mycolor:hover{
+	
+  background: linear-gradient($color3,$color1) !important;
+  box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+  color: #fff;
+  transform: translateY(-2px);
+}
+.panel_hidden_left {
+  width: 380px;
+  height: 570px;
+  position: fixed;
+  right: -380px;
+  top: 59px;
+  background: rgba(203, 222, 237, 0.7);
+  padding: 25px;
+  -webkit-transition: right .5s;
+  transition: right .5s;
+}
+.contenedor380{
+  height: 380px;
+  overflow-y: auto;
+}
+.contenedor400{
+  height: 400px;
+  overflow-y: auto;
+}
+/* Tamaño del scroll */
+.contenedor400::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+ /* Estilos barra (thumb) de scroll */
+.contenedor400::-webkit-scrollbar-thumb {
+  background: lighten($color1, 9);
+  border-radius: 4px;
+}
+
+.contenedor400::-webkit-scrollbar-thumb:active {
+  background-color: $color3;
+}
+
+.contenedor400::-webkit-scrollbar-thumb:hover {
+  background: $color3;
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+ /* Estilos track de scroll */
+.contenedor400::-webkit-scrollbar-track {
+  background: darken($color1, 8);
+  border-radius: 4px;
+}
+
+.contenedor400::-webkit-scrollbar-track:hover, 
+.contenedor400::-webkit-scrollbar-track:active {
+  background: $color2;
+}
+
+
+
+
+
+.table__kirito{
+  width: 100%;
+  height: auto;
+  position: relative;
+  border: 1px solid #000;
+  thead{
+    background: $color2;
+    color:#fff;
+    tr{
+      height: 28px;
+      td{
+        text-align: center;
+        width: 20%;
+        border: 1px solid #fff;
+        text-transform: uppercase;
+      }
+    }
+  }
+  tbody{
+    tr{
+      height: 28px;
+      td{
+        padding-left: 10px;
+        width: 20%;
+        border: 1px solid #fff;
+        text-transform: uppercase;
+      }
+    }
+    tr:nth-child(even){
+      background: lighten($color1, 5);
+    }
+  }
+}

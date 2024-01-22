@@ -1,0 +1,115 @@
+@charset "UTF-8";
+.btn-mycolor {
+  background: -webkit-gradient(linear, left top, left bottom, from(#CBDEED), to(#7a85db));
+  background: linear-gradient(#CBDEED, #7a85db);
+  -webkit-box-shadow: 2px 2px 3px 5px #CBDEED;
+          box-shadow: 2px 2px 3px 5px #CBDEED;
+  text-transform: uppercase;
+  border-radius: 5px;
+  -webkit-box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+          box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-mycolor:hover {
+  background: -webkit-gradient(linear, left top, left bottom, from(#7a85db), to(#CBDEED)) !important;
+  background: linear-gradient(#7a85db, #CBDEED) !important;
+  -webkit-box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+          box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+  color: #fff;
+  -webkit-transform: translateY(-2px);
+          transform: translateY(-2px);
+}
+
+.panel_hidden_left {
+  width: 380px;
+  height: 570px;
+  position: fixed;
+  right: -380px;
+  top: 59px;
+  background: rgba(203, 222, 237, 0.7);
+  padding: 25px;
+  -webkit-transition: right .5s;
+  transition: right .5s;
+}
+
+.contenedor380 {
+  height: 380px;
+  overflow-y: auto;
+}
+
+.contenedor400 {
+  height: 400px;
+  overflow-y: auto;
+}
+
+/* Tamaño del scroll */
+.contenedor400::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Estilos barra (thumb) de scroll */
+.contenedor400::-webkit-scrollbar-thumb {
+  background: #edf4f9;
+  border-radius: 4px;
+}
+
+.contenedor400::-webkit-scrollbar-thumb:active {
+  background-color: #7a85db;
+}
+
+.contenedor400::-webkit-scrollbar-thumb:hover {
+  background: #7a85db;
+  -webkit-box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos track de scroll */
+.contenedor400::-webkit-scrollbar-track {
+  background: #adcbe3;
+  border-radius: 4px;
+}
+
+.contenedor400::-webkit-scrollbar-track:hover,
+.contenedor400::-webkit-scrollbar-track:active {
+  background: #113F63;
+}
+
+.table__kirito {
+  width: 100%;
+  height: auto;
+  position: relative;
+  border: 1px solid #000;
+}
+
+.table__kirito thead {
+  background: #113F63;
+  color: #fff;
+}
+
+.table__kirito thead tr {
+  height: 28px;
+}
+
+.table__kirito thead tr td {
+  text-align: center;
+  width: 15%;
+  border: 1px solid #fff;
+  text-transform: uppercase;
+}
+
+.table__kirito tbody tr {
+  height: 28px;
+}
+
+.table__kirito tbody tr td {
+  padding-left: 10px;
+  width: 15%;
+  border: 1px solid #fff;
+  text-transform: uppercase;
+}
+
+.table__kirito tbody tr:nth-child(even) {
+  background: #deeaf4;
+}
+/*# sourceMappingURL=admin.css.map */

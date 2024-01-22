@@ -1,0 +1,1057 @@
+<!-- @use  Jenssegers\Date\Date as DATE; -->
+<!DOCTYPE html>
+<html lang="en" style="background-color: #f5f5f5;">
+    <head>
+        <title>pdf</title>
+        <meta charset="UTF-8">
+        <meta name="http-equiv="X-UA-Compatible" content="IE-chrome">
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- <script src="http://localhost/Web/public/assets/js/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="http://localhost/Web/public/assets/js/bootstrap/dist/css/bootstrap.min.css"></script> -->
+        <!-- <link media="all" type="text/css" rel="stylesheet" href="http://localhost/Web/public/assets/plugins/datatables/dataTables.bootstrap.css">
+        <link media="all" type="text/css" rel="stylesheet" href="http://localhost/Web/public/assets/plugins/colorpicker/bootstrap-colorpicker.min.css">
+        <link media="all" type="text/css" rel="stylesheet" href="http://localhost/Web/public/assets/plugins/timepicker/bootstrap-timepicker.min.css"> -->
+
+        <link href="C:\xampp\htdocs\Web\public\assets/js/bootstrap/dist/js/bootstrap.min.js" rel="stylesheet" type="text/javscript">
+        <link href="C:\xampp\htdocs\Web\public\assets/js/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+        <style type="text/css">
+            @page  {
+                margin: 1cm 1cm 1cm 1cm; 
+            } 
+            .page-break {
+                page-break-after: always;
+            }
+            body {
+                background-image: url(assets/images/uatfblanco.png);
+                background-color: #f5f5f5 !important;
+                background-size: 100PX;
+            }
+            header {
+                position: fixed;
+                top: 0cm;
+                left: 0cm;
+                right: 0cm;
+                height: 3cm;
+                margin-bottom: 0.5cm;
+            }
+            .container{
+                margin-top: 2.6cm;
+                /* border: 2px solid green; */
+            }
+            .table__kiri {
+                margin-left: -12px;
+                margin-right: -12px;
+                margin-top: -12px;
+                width: 100%;
+                height: auto;
+                position: relative;
+                /* border: 2px solid blue; */
+            }
+            .table__kiri thead {
+            background: #113F63;
+            color: #fff;
+            }
+            .table__kiri thead tr {
+            height: 28px;
+            }
+            .table__kiri thead tr th {
+            padding-left: 1px;
+            /* width: 12%; */
+            border: 1px solid #fff;
+            text-transform: uppercase;
+            font-size: 9px;
+            }
+            .table__kiri tbody tr {
+            height: 28px;
+            }
+            .table__kiri tbody tr td {
+            padding-left: 1px;
+            border: 1px solid #fff;
+            text-transform: capitalize !important;
+            /* text-align:center;  */
+            font-size: 9px;
+            }
+            .table__kiri tbody tr:nth-child(even) {
+            background: #deeaf4;
+            }
+            #encabezado {
+                display: flex;
+                align-items:center;
+                height: 65px;
+            }
+            #imgpersonal{
+                margin-top: 5px;
+                float: right;  
+                width: 75px;
+            }
+            #imguatf{
+                margin-top: 5px;
+                float: left;
+                width:70PX;
+            }
+            #textoencabezado{
+                margin-top: 5px;
+                text-align:center;
+            }
+            #uno{
+                font-size: 12px;
+                font-weight: bold;
+                margin-bottom: 0px;
+            }
+            #dos{
+                font-size: 10px;
+                margin-bottom: 0px;
+            }
+            #tres{
+                font-size: 12px;
+                font-weight: bold;
+                margin-top: 1px;
+                text-border: center;
+            }
+            #cuerpo2{
+                margin-top: 1px;
+                text-align: center;
+                margin-bottom: 0px;
+                height: 12px; 
+            }
+            #cuerpo2 p{
+                display: inline-block;
+                padding-bottom: 2px;
+                color: black;
+            }
+            #tipocontrato{
+                position:relative;
+                margin-top: 3px;
+                text-align:center;
+                color: black;
+                font-size: 10px;
+                text-transform: uppercase;
+            }
+            b{
+                color: black;
+            }
+            #cuerpodatospersonal{
+                margin-top: -7px;
+                position:relative;
+                align-items:center;
+                height: 10px;
+                margin-bottom: 0px;
+            }
+
+            #cuerpodatospersonal p{
+                
+                position:relative;
+                text-align: left;
+                text-transform: uppercase;
+                align-items:center;
+                color: black;
+                padding: 2px 0px 2px 0px;
+                font-size: 10px;
+            }
+            #datos2{
+                margin-top: -10px;
+            }
+            #datos1{
+                margin-top: -10px;
+            }
+            #total{
+                background: white;
+                border: 1px solid black;
+            }
+            #total td{
+                text-align: flex;
+                font-size: 9px;
+                font-weight: bold;
+                color: #113F63;
+            }
+            #total1{
+                border: 1px solid black;
+                background: white;
+            }
+            #total1 td{
+                text-align: flex;
+                font-size: 9px;
+                font-weight: bold;
+            }
+            main {
+                margin-top: 4cm;
+                border: 2px solid blue;
+            }
+            /* footer {
+                position: fixed;
+                bottom: 0cm;
+                left: 0cm;
+                right: 0cm;
+                height: 2cm;
+                background-color: #46C66B;
+                color: white;
+                text-align: center;
+                line-height: 35px;
+            } */
+        </style>
+
+    </head>
+    <body>
+        <header>
+            <div class="col-12" id="encabezado">
+                <img src="assets/images/logo.png" alt="uatf" id="imguatf">
+                <div id="textoencabezado">
+                    <p id="uno">UNIVERSIDAD AUTONOMA "TOMAS FRIAS"</p>
+                    <p id="dos">DIRECCION ADMINISTRATIVA Y FINANCIERA</p>
+                    <p id="dos">DEPARTAMENTO DE PERSONAL</p>
+                    <p id="tres"><u>KARDEX DE CONTROL DE ASISTENCIAS</u> </p>
+                </div>
+                <img id="imgpersonal" src="assets/images/LOGO CIRCULAR COLOR.png" alt="personal"> 
+            </div> 
+            <div id="cuerpo2">
+                <p style="font-size:10px; margin-left: 30%">Desde:  2022-09-05 </p>
+                <p style="font-size:10px; margin-right: 50%;">Hasta:  2022-09-06</p>
+            </div>
+            <p id="tipocontrato"> PERTENECIENTE AL GRUPO:  <b>pasantia </b></p>
+            <div id="cuerpodatospersonal">
+                    <p id="datos2" style=" float: left; padding-left: 50px;"><b>MES:</b>sep. sep. </p>
+                    <p id="datos2" style=" float: right; padding-right: 50px;"><b>AÑO:</b>2022 </p>
+            </div>
+        </header>
+                                        <div class="container">
+                <p style="text-align: center; text-transform: capitalize !important; font-size:10px; margin-top: -10px;">Nombre: <b>ORLANDO ZUNA HUAYGUA</b></p>
+                    <table class="table__kiri table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="50px">fecha</th>
+                                <th>dia</th>
+                                <th>Ci</th>
+                                <th>Hrio.</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>H_Tra.</th>
+                                <th>Obs.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>10545775</td>
+                                                    <td>turno mañana</td>
+                                                    <td>entrada</td>
+                                                    <td>00:00:00</td>
+                                                    <td>falta</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                <td>salida</td>
+                                                            <td>00:00:00</td>
+                                                            <td>falta</td>
+                                                             
+                                                            <td>00:00</td>
+                                                            <td>0</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </tr>  
+                                                                                                                                                                                                                        
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>10545775</td>
+                                                    <td>turno tarde</td>
+                                                    <td>entrada</td>
+                                                    <td>14:28:09</td>
+                                                    <td>en hora</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <td>salida</td>
+                                                            <td>18:00:00</td>
+                                                            <td>permiso</td>
+                                                             
+                                                            <td>03:31</td>
+                                                            <td>3</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>  
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr id="total">
+                                    <td></td>
+                                    <td></td>
+                                    <td>Atraso</td>
+                                    <td>abandono</td>
+                                    <td>permiso</td>
+                                    <td>faltas</td>
+                                    <td>d. tra.</td>
+                                    <td>T. dias</td>
+                                    <td>D. b_te</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                    <tr id="total1">
+                                    <td></td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td>0</td> 
+                                    <td>1</td>
+                                    <td>0.5</td>
+                                    <td>0.5</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+
+                        </tbody>
+                    </table>
+            </div>
+                        <div class="page-break"><br></div>   
+                                            <div class="container">
+                <p style="text-align: center; text-transform: capitalize !important; font-size:10px; margin-top: -10px;">Nombre: <b>GRACIELA VASQUEZ RELOS</b></p>
+                    <table class="table__kiri table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="50px">fecha</th>
+                                <th>dia</th>
+                                <th>Ci</th>
+                                <th>Hrio.</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>H_Tra.</th>
+                                <th>Obs.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>10527098</td>
+                                                    <td>turno mañana</td>
+                                                    <td>entrada</td>
+                                                    <td>00:00:00</td>
+                                                    <td>falta</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>salida</td>
+                                                            <td>00:00:00</td>
+                                                            <td>falta</td>
+                                                             
+                                                            <td>00:00</td>
+                                                            <td>0</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </tr>  
+                                                                                                                                                                                                                        
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>10527098</td>
+                                                    <td>turno tarde</td>
+                                                    <td>entrada</td>
+                                                    <td>00:00:00</td>
+                                                    <td>falta</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <td>salida</td>
+                                                            <td>00:00:00</td>
+                                                            <td>falta</td>
+                                                             
+                                                            <td>00:00</td>
+                                                            <td>0</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>  
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr id="total">
+                                    <td></td>
+                                    <td></td>
+                                    <td>Atraso</td>
+                                    <td>abandono</td>
+                                    <td>permiso</td>
+                                    <td>faltas</td>
+                                    <td>d. tra.</td>
+                                    <td>T. dias</td>
+                                    <td>D. b_te</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                    <tr id="total1">
+                                    <td></td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td>0</td> 
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+
+                        </tbody>
+                    </table>
+            </div>
+                        <div class="page-break"><br></div>   
+                                            <div class="container">
+                <p style="text-align: center; text-transform: capitalize !important; font-size:10px; margin-top: -10px;">Nombre: <b>MARITZA CHIPANA COPA</b></p>
+                    <table class="table__kiri table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="50px">fecha</th>
+                                <th>dia</th>
+                                <th>Ci</th>
+                                <th>Hrio.</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>H_Tra.</th>
+                                <th>Obs.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>8530686</td>
+                                                    <td>turno tarde</td>
+                                                    <td>entrada</td>
+                                                    <td>00:00:00</td>
+                                                    <td>falta</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>salida</td>
+                                                            <td>00:00:00</td>
+                                                            <td>falta</td>
+                                                             
+                                                            <td>00:00</td>
+                                                            <td>0</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </tr>  
+                                                                                                                                                                                                                        
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>8530686</td>
+                                                    <td>turno mañana</td>
+                                                    <td>entrada</td>
+                                                    <td>00:00:00</td>
+                                                    <td>falta</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <td>salida</td>
+                                                            <td>00:00:00</td>
+                                                            <td>falta</td>
+                                                             
+                                                            <td>00:00</td>
+                                                            <td>0</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>  
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr id="total">
+                                    <td></td>
+                                    <td></td>
+                                    <td>Atraso</td>
+                                    <td>abandono</td>
+                                    <td>permiso</td>
+                                    <td>faltas</td>
+                                    <td>d. tra.</td>
+                                    <td>T. dias</td>
+                                    <td>D. b_te</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                    <tr id="total1">
+                                    <td></td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td>0</td> 
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+
+                        </tbody>
+                    </table>
+            </div>
+                        <div class="page-break"><br></div>   
+                                            <div class="container">
+                <p style="text-align: center; text-transform: capitalize !important; font-size:10px; margin-top: -10px;">Nombre: <b>JHONNY GUTIERREZ LAZARO</b></p>
+                    <table class="table__kiri table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="50px">fecha</th>
+                                <th>dia</th>
+                                <th>Ci</th>
+                                <th>Hrio.</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>H_Tra.</th>
+                                <th>Obs.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>8513202</td>
+                                                    <td>turno mañana</td>
+                                                    <td>entrada</td>
+                                                    <td>00:00:00</td>
+                                                    <td>falta</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>salida</td>
+                                                            <td>00:00:00</td>
+                                                            <td>falta</td>
+                                                             
+                                                            <td>00:00</td>
+                                                            <td>0</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </tr>  
+                                                                                                                                                                                                                        
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>8513202</td>
+                                                    <td>turno tarde</td>
+                                                    <td>entrada</td>
+                                                    <td>00:00:00</td>
+                                                    <td>falta</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <td>salida</td>
+                                                            <td>00:00:00</td>
+                                                            <td>falta</td>
+                                                             
+                                                            <td>00:00</td>
+                                                            <td>0</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>  
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr id="total">
+                                    <td></td>
+                                    <td></td>
+                                    <td>Atraso</td>
+                                    <td>abandono</td>
+                                    <td>permiso</td>
+                                    <td>faltas</td>
+                                    <td>d. tra.</td>
+                                    <td>T. dias</td>
+                                    <td>D. b_te</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                    <tr id="total1">
+                                    <td></td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td>0</td> 
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+
+                        </tbody>
+                    </table>
+            </div>
+                        <div class="page-break"><br></div>   
+                                            <div class="container">
+                <p style="text-align: center; text-transform: capitalize !important; font-size:10px; margin-top: -10px;">Nombre: <b>BRYAN RUDDY MELCHOR HUARACHI</b></p>
+                    <table class="table__kiri table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="50px">fecha</th>
+                                <th>dia</th>
+                                <th>Ci</th>
+                                <th>Hrio.</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>H_Tra.</th>
+                                <th>Obs.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>8579437</td>
+                                                    <td>turno tarde</td>
+                                                    <td>entrada</td>
+                                                    <td>14:51:10</td>
+                                                    <td>atrasado</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>salida</td>
+                                                            <td>18:15:34</td>
+                                                            <td>salida</td>
+                                                             
+                                                            <td>03:24</td>
+                                                            <td>3</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </tr>  
+                                                                                                                                                                                                                        
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>8579437</td>
+                                                    <td>turno mañana</td>
+                                                    <td>entrada</td>
+                                                    <td>08:00:00</td>
+                                                    <td>permiso</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <td>salida</td>
+                                                            <td>12:00:00</td>
+                                                            <td>abandono</td>
+                                                             
+                                                            <td>04:00</td>
+                                                            <td>4</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>  
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr id="total">
+                                    <td></td>
+                                    <td></td>
+                                    <td>Atraso</td>
+                                    <td>abandono</td>
+                                    <td>permiso</td>
+                                    <td>faltas</td>
+                                    <td>d. tra.</td>
+                                    <td>T. dias</td>
+                                    <td>D. b_te</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                    <tr id="total1">
+                                    <td></td>
+                                    <td></td>
+                                    <td>1</td>
+                                    <td>1</td> 
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+
+                        </tbody>
+                    </table>
+            </div>
+                        <div class="page-break"><br></div>   
+                                            <div class="container">
+                <p style="text-align: center; text-transform: capitalize !important; font-size:10px; margin-top: -10px;">Nombre: <b>RAMIRO VARGAS MAMANI</b></p>
+                    <table class="table__kiri table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="50px">fecha</th>
+                                <th>dia</th>
+                                <th>Ci</th>
+                                <th>Hrio.</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>H_Tra.</th>
+                                <th>Obs.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>8515421</td>
+                                                    <td>turno mañana</td>
+                                                    <td>entrada</td>
+                                                    <td>00:00:00</td>
+                                                    <td>falta</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>salida</td>
+                                                            <td>00:00:00</td>
+                                                            <td>falta</td>
+                                                             
+                                                            <td>00:00</td>
+                                                            <td>0</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </tr>  
+                                                                                                                                                                                                                        
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>8515421</td>
+                                                    <td>turno tarde</td>
+                                                    <td>entrada</td>
+                                                    <td>00:00:00</td>
+                                                    <td>falta</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <td>salida</td>
+                                                            <td>00:00:00</td>
+                                                            <td>falta</td>
+                                                             
+                                                            <td>00:00</td>
+                                                            <td>0</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>  
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr id="total">
+                                    <td></td>
+                                    <td></td>
+                                    <td>Atraso</td>
+                                    <td>abandono</td>
+                                    <td>permiso</td>
+                                    <td>faltas</td>
+                                    <td>d. tra.</td>
+                                    <td>T. dias</td>
+                                    <td>D. b_te</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                    <tr id="total1">
+                                    <td></td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td>0</td> 
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+
+                        </tbody>
+                    </table>
+            </div>
+                        <div class="page-break"><br></div>   
+                                            <div class="container">
+                <p style="text-align: center; text-transform: capitalize !important; font-size:10px; margin-top: -10px;">Nombre: <b>PAMELA NAYDA LOAYZA TERRAZAS</b></p>
+                    <table class="table__kiri table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="50px">fecha</th>
+                                <th>dia</th>
+                                <th>Ci</th>
+                                <th>Hrio.</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>H_Tra.</th>
+                                <th>Obs.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>8539616</td>
+                                                    <td>turno tarde</td>
+                                                    <td>entrada</td>
+                                                    <td>14:50:39</td>
+                                                    <td>atrasado</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>salida</td>
+                                                            <td>18:15:17</td>
+                                                            <td>salida</td>
+                                                             
+                                                            <td>03:24</td>
+                                                            <td>3</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </tr>  
+                                                                                                                                                                                                                        
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>8539616</td>
+                                                    <td>turno mañana</td>
+                                                    <td>entrada</td>
+                                                    <td>08:19:15</td>
+                                                    <td>atrasado</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <td>salida</td>
+                                                            <td>12:00:00</td>
+                                                            <td>abandono</td>
+                                                             
+                                                            <td>03:40</td>
+                                                            <td>3</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>  
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr id="total">
+                                    <td></td>
+                                    <td></td>
+                                    <td>Atraso</td>
+                                    <td>abandono</td>
+                                    <td>permiso</td>
+                                    <td>faltas</td>
+                                    <td>d. tra.</td>
+                                    <td>T. dias</td>
+                                    <td>D. b_te</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                    <tr id="total1">
+                                    <td></td>
+                                    <td></td>
+                                    <td>2</td>
+                                    <td>1</td> 
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+
+                        </tbody>
+                    </table>
+            </div>
+                        <div class="page-break"><br></div>   
+                                            <div class="container">
+                <p style="text-align: center; text-transform: capitalize !important; font-size:10px; margin-top: -10px;">Nombre: <b>DANIELA QUISPE LOPEZ</b></p>
+                    <table class="table__kiri table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="50px">fecha</th>
+                                <th>dia</th>
+                                <th>Ci</th>
+                                <th>Hrio.</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>H_Tra.</th>
+                                <th>Obs.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>8520046</td>
+                                                    <td>turno tarde</td>
+                                                    <td>entrada</td>
+                                                    <td>14:21:43</td>
+                                                    <td>en hora</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>salida</td>
+                                                            <td>18:17:23</td>
+                                                            <td>salida</td>
+                                                             
+                                                            <td>03:55</td>
+                                                            <td>3</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </tr>  
+                                                                                                                                                                                                                        
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>8520046</td>
+                                                    <td>turno mañana</td>
+                                                    <td>entrada</td>
+                                                    <td>08:18:11</td>
+                                                    <td>atrasado</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <td>salida</td>
+                                                            <td>12:00:00</td>
+                                                            <td>abandono</td>
+                                                             
+                                                            <td>03:41</td>
+                                                            <td>3</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>  
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <tr id="total">
+                                    <td></td>
+                                    <td></td>
+                                    <td>Atraso</td>
+                                    <td>abandono</td>
+                                    <td>permiso</td>
+                                    <td>faltas</td>
+                                    <td>d. tra.</td>
+                                    <td>T. dias</td>
+                                    <td>D. b_te</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                    <tr id="total1">
+                                    <td></td>
+                                    <td></td>
+                                    <td>1</td>
+                                    <td>1</td> 
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+
+                        </tbody>
+                    </table>
+            </div>
+                        <div class="page-break"><br></div>   
+                                            <div class="container">
+                <p style="text-align: center; text-transform: capitalize !important; font-size:10px; margin-top: -10px;">Nombre: <b>JUANITA MAMANI CAMPOS</b></p>
+                    <table class="table__kiri table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="50px">fecha</th>
+                                <th>dia</th>
+                                <th>Ci</th>
+                                <th>Hrio.</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>H_Tra.</th>
+                                <th>Obs.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>10557880</td>
+                                                    <td>turno tarde</td>
+                                                    <td>entrada</td>
+                                                    <td>14:05:48</td>
+                                                    <td>en hora</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>salida</td>
+                                                            <td>18:16:19</td>
+                                                            <td>salida</td>
+                                                             
+                                                            <td>04:10</td>
+                                                            <td>4</td>
+                                                                                                                                                                                                                                                                        </tr>  
+                                                                                                                                                                                                                        
+                                                <tr>
+                                                    <td>2022-09-06</td>
+                                                    <td>mar.</td>
+                                                    <td>10557880</td>
+                                                    <td>turno mañana</td>
+                                                    <td>entrada</td>
+                                                    <td>00:00:00</td>
+                                                    <td>falta</td>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <td>salida</td>
+                                                            <td>00:00:00</td>
+                                                            <td>falta</td>
+                                                             
+                                                            <td>00:00</td>
+                                                            <td>0</td>
+                                                                                                                                                            </tr>  
+                                                                                                                                                                                                                        <tr id="total">
+                                    <td></td>
+                                    <td></td>
+                                    <td>Atraso</td>
+                                    <td>abandono</td>
+                                    <td>permiso</td>
+                                    <td>faltas</td>
+                                    <td>d. tra.</td>
+                                    <td>T. dias</td>
+                                    <td>D. b_te</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                    <tr id="total1">
+                                    <td></td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td>0</td> 
+                                    <td>0</td>
+                                    <td>0.5</td>
+                                    <td>0.5</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+
+                        </tbody>
+                    </table>
+            </div>
+                        <div class="page-break"><br></div>   
+                                            <div class="container">
+                <p style="text-align: center; text-transform: capitalize !important; font-size:10px; margin-top: -10px;">Nombre: <b>JESUS ZUNA HUAYGUA</b></p>
+                    <table class="table__kiri table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="50px">fecha</th>
+                                <th>dia</th>
+                                <th>Ci</th>
+                                <th>Hrio.</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>H_Tra.</th>
+                                <th>Obs.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr id="total">
+                                    <td></td>
+                                    <td></td>
+                                    <td>Atraso</td>
+                                    <td>abandono</td>
+                                    <td>permiso</td>
+                                    <td>faltas</td>
+                                    <td>d. tra.</td>
+                                    <td>T. dias</td>
+                                    <td>D. b_te</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                    <tr id="total1">
+                                    <td></td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td>0</td> 
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+
+                        </tbody>
+                    </table>
+            </div>
+                            <footer>
+        </footer>
+    </body>
+</html>
+

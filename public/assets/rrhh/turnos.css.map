@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,AAAA,WAAW,CAAC;EACV,KAAK,EAAE,GAAG;EACV,MAAM,EAAE,KAAK;EACb,QAAQ,EAAE,KAAK;EACf,KAAK,EAAE,IAAI;EACX,GAAG,EAAE,IAAI;EACT,UAAU,EAAE,wBAAwB;EACpC,OAAO,EAAE,GAAG;EACZ,kBAAkB,EAAE,SAAS;EAC7B,UAAU,EAAE,SAAS;CACtB",
+    "sources": [
+        "turnos.scss"
+    ],
+    "names": [],
+    "file": "turnos.css"
+}

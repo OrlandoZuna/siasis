@@ -1,0 +1,17 @@
+.slideout {
+  background: linear-gradient(to bottom, #003351 0%, #1d0a3a 100%); 
+  color: #fff;
+  height: 100%;
+  min-height: 100%;
+  padding: 1em;
+  position: absolute;
+  right: -360px;
+  top: 0;
+  transition-duration: 0.2s;
+  width: 325px;
+}
+
+.slideout.on {
+  right: 0;
+}
+

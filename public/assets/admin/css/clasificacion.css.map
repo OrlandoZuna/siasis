@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AACA,AAAA,MAAM,CAAA;EACL,gBAAgB,EAAC,IAAI;CACrB",
+    "sources": [
+        "clasificacion.scss"
+    ],
+    "names": [],
+    "file": "clasificacion.css"
+}

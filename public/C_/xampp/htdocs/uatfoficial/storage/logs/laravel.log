@@ -1,0 +1,30 @@
+max="{{DATE::now()->format('Y-m-d')}}"    --->  para en fechas
+
+
+
+---------------lllenado a tabla--
+                // var html = '';
+                // var paginacion;
+                // var i;
+                // datos = dato.data;
+                // console.log(dato);
+                // for (i = 0; i < datos.length; i++) {
+                //   html += '<tr>' +
+                //     '<td>' + datos[i].Nregistro + '</td>' +
+                //     '<td>' + datos[i].id_biometrico + '</td>' +
+                //     '<td>' + datos[i].id_user_b + '</td>' +
+                //     '<td>' + datos[i].state + '</td>' +
+                //     '<td>' + datos[i].timestamp + '</td>' +
+                //     '<td>' + datos[i].type + '</td>' +
+                //     '</tr>';
+                // }
+                // paginacion += '<a href= ' + dato.next_page_url +'>'+2+'</a>';
+                // // html +='<tr>' + 
+                // //     '<td>' + dato.next_page_url +  '</td>' +
+                       
+                // //     '</tr>';
+                // $('#DataResult').html(html);
+                // $('.paginacionn').html(paginacion);
+                
+                
+                //$("#asis").modal('show');

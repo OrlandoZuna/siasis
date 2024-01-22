@@ -1,0 +1,13 @@
+{
+    "name": "Rrhh",
+    "alias": "rrhh",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\Rrhh\\Providers\\RrhhServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

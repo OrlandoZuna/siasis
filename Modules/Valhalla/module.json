@@ -1,0 +1,13 @@
+{
+    "name": "Valhalla",
+    "alias": "valhalla",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\Valhalla\\Providers\\ValhallaServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,1005 @@
+<?php
+
+namespace Modules\Rrhh\Http\Controllers;
+
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Jenssegers\Date\Date;
+use Carbon\Carbon;
+use Modules\Rrhh\Entities\Cabezera;
+//use Modules\Rrhh\Entities\Personal;
+use Modules\Rrhh\Entities\Personal;
+use Modules\Rrhh\Entities\Mencion;
+use Modules\Rrhh\Entities\Deuda;
+use Modules\Rrhh\Entities\PlanillaMbajas;
+use Modules\Rrhh\Entities\PersonaMbaja;
+use App\Gestion;
+use App\Mifirma;
+use Auth;
+use PDF;
+use Modules\Rrhh\Entities\Deudauser;
+use Modules\Rrhh\exports\ExpEntrePl;
+use Modules\Rrhh\exports\ExcForType;
+
+
+class ServicioController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     * @return Renderable
+     */
+    public function index(Request $request){
+      $title='contenido de la cabecera';
+      $cabecera = Cabezera::where('status','valido')->orderby('id', 'ASC')->paginate(10);
+      if($request->ajax()){
+        return [
+          'cabecera' => view('rrhh::app1.servicio.PresuRendDa')->with(compact('cabecera'))->render(),
+          'next_page' => $cabecera->nextPageUrl()
+        ];
+      }else{
+        return view('rrhh::app1.servicio.index',compact('title','cabecera'));
+      }
+      //$cabecera = Cabezera::where('status','valido')->orderby('id', 'ASC')->get();
+      //return view('rrhh::app1.servicio.index',compact('title','cabecera'));
+
+    }
+
+    public function getInvalidPlanll(Request $request){
+      $cabecera = Cabezera::where('status','invalido')->orderby('id', 'ASC')->paginate(10);
+      if($request->ajax()){
+        return [
+          'cabecera' => view('rrhh::app1.servicio.PresuRendDa')->with(compact('cabecera'))->render(),
+          'next_page' => $cabecera->nextPageUrl()
+        ];
+      }else{
+        return view('rrhh::app1.servicio.index',compact('title','cabecera'));
+      }
+      // $cabecera = Cabezera::where("status","invalido")->orderby('id','ASC')->get();
+      // return response()->json(view('rrhh::app1.servicio.PresuRendDa',compact('cabecera'))->render());
+    }
+
+    public function getValidPlanll(Request $request){
+      $cabecera = Cabezera::where('status','valido')->orderby('id', 'ASC')->paginate(10);
+      if($request->ajax()){
+        return [
+          'cabecera' => view('rrhh::app1.servicio.PresuRendDa')->with(compact('cabecera'))->render(),
+          'next_page' => $cabecera->nextPageUrl()
+        ];
+      }else{
+        return view('rrhh::app1.servicio.index',compact('title','cabecera'));
+      }
+      //$cabecera = Cabezera::where("status","valido")->orderby('id','ASC')->get();
+      //return response()->json(view('rrhh::app1.servicio.PresuRendDa',compact('cabecera'))->render());
+    }
+
+
+    /**
+     * Show the form for creating a new resource.
+     * @return Renderable
+     */
+    public function create(){
+        return view('rrhh::create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     * @param Request $request
+     * @return Renderable
+     */
+    public function store(Request $request){
+        //
+    }
+
+    /**
+     * Show the specified resource.
+     * @param int $id
+     * @return Renderable
+     */
+    public function show($id){
+        return view('rrhh::show');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     * @param int $id
+     * @return Renderable
+     */
+    public function edit($id){
+        return view('rrhh::edit');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     * @param Request $request
+     * @param int $id
+     * @return Renderable
+     */
+    public function update(Request $request, $id){
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * @param int $id
+     * @return Renderable
+     */
+    public function destroy($id){
+        //
+    }
+
+
+    public function firmar(Request $request){
+        $id=$request->id;
+        $res=$request->res;
+        $dato=Mifirma::findOrfail($id);
+        if($res == $dato->respuesta_recuperacion){
+          $response='si';
+        }else{
+          $response='no';
+        }
+        return response()->json($response);
+    }
+
+    public function getformpre(){
+      $mifi=Mifirma::where('user_id',Auth::user()->id)->first();
+      $dateNow= Date::now();
+      $mencions = Mencion::get();
+      $deudas = Deuda::take(1)->get();
+      $deudasSel = Deuda::get();
+      $gestAnt = Gestion::orderBy('id','ASC')->pluck('fin_gestion')->last(); //2020  //2021
+      $fecPlUl = Cabezera::orderBy('id','ASC')->pluck('created_at')->last(); //2020
+      $nroPlUl = Cabezera::where('status','valido')->orderBy('id','ASC')->pluck('nro')->last();
+      $gestAnt = new Date($gestAnt);
+      $yearGes = $gestAnt->format('Y');
+      if($fecPlUl == null){
+        $nro = 1;
+      }else{
+        $fecPlUl = new Date($fecPlUl);
+        if($fecPlUl->format('Y') == $gestAnt->format('Y') ){
+          $nro = $nroPlUl+1;
+        }else{
+          $nro = 1;
+        }
+      }
+      return view('rrhh::app1.servicio.formpres',compact('mifi','dateNow','nro','yearGes','mencions','deudas','deudasSel'));
+    }
+
+    public function SeleList(){
+      $deudaA = Deuda::take(1)->get();
+      $deudaSel = Deuda::get();
+      //return response()->json(view('rrhh::app1.deudas.dataRSLi',compact('deudo'))->render());
+      return ['deudA' => $deudaA,'deudS' => $deudaSel];
+    }
+    public function SDeudsB($id){
+      $SelDeu = Deuda::findOrFail($id);
+      $SelDeu = $SelDeu->importe;
+      return $SelDeu;
+    }
+
+    public function getUsPe($id){
+      $pers = Personal::where('ci',$id)->first();
+      return $pers;
+    }
+
+    public function createmencion(Request $request){
+      $mencionSave = new Mencion();
+      $mencionSave->nombre = $request->nombreMencion;
+      $mencionSave->contenido = $request->contenidoMencion;
+      $mencionSave->save();
+      $idmenc = $mencionSave['id'];
+      $mencGet = Mencion::where('id',$idmenc)->get();
+      if ($request->ajax()) {
+        return response()->json(view('rrhh::app1.servicio.GetViewMenc',compact('mencGet'))->render());
+      }
+      //dd($mencionSave);
+    }
+    public function editedmencion(Request $request){
+      $id = $request->id_ediMenc;
+      $mencGet = Mencion::where('id',$id)->get();
+      if ($request->ajax()) {
+        return response()->json(view('rrhh::app1.mencion.editMencR',compact('mencGet'))->render());
+      }
+    }
+    public function updatedmencion(Request $request, $id){
+      $mencGet = Mencion::find($id);
+      $mencGet->nombre = $request->nombreMencionU;
+      $mencGet->contenido = $request->contenidoMencionU;
+      $mencGet->save();
+      $mencGet = Mencion::where('id',$id)->get();
+      if ($request->ajax()) {
+        return response()->json(view('rrhh::app1.servicio.GetViewMenc',compact('mencGet'))->render());
+      }
+    }
+
+    public function smenti(Request $request,$id){
+      $mencions = Mencion::findOrFail($id);
+      $s_tring  = $mencions->contenido;
+
+      $s_keyS = array("{-nombres-}","{-Paterno-}","{-Materno-}","{-nro_cedula-}","{-extension_ci-}","{-Fecha.inicio-}","{-fecha.final-}","{-C.horaria.inicial-}","{-C.horaria.fin-}","{-facultad.nombre-}","{-haber_pagable-}");
+      $fechini = new Date($request->fech_ini);
+      $fechfin = new Date($request->fech_fin);
+      $names = ucfirst($request->nombres);
+      $surnameP = ucfirst($request->Paterno);
+      $surnameM = ucfirst($request->Materno);
+      $surnameM = ucfirst($request->Materno);
+      $extensionPe = ucfirst($request->ciEx).".";
+      $haberPag = $request->haberS.' Bs';
+      $repl_Str = array($names,$surnameP,$surnameM,$request->ci,$extensionPe,$fechini->format('F'),$fechfin->format('F'),$request->carg_ini,$request->carg_fin, $request->u_mayor,$haberPag );
+
+      $compl_men = str_replace($s_keyS, $repl_Str, $s_tring);
+      return $compl_men;
+    }
+
+    public function newdeu(Request $request){
+      $deudas = new Deuda();
+      $deudas->nombre = $request->nombre;
+      $deudas->importe = $request->importeDeuda == 0 ? 0 : $request->importeDeuda;
+      $deudas->save();
+      $deudo = Deuda::get();
+      $newD = $deudas['id'];
+      $newDI = $deudas->importe;
+      if ($request->ajax()) {
+        return response()->json(view('rrhh::app1.servicio.deudataR',compact('newD','deudo','newDI'))->render());
+      }
+    }
+
+    public function deldeulist(Request $request, $id){
+      if($id =='undefined'){
+        return response()->json('btn');
+      }else{
+        $deudas = Deuda::findOrFail($id);
+        $deudas->delete();
+        return response()->json($deudas);
+      }
+    }
+
+    public function upddeulist(Request $request, $id){
+      $deudaS = Deuda::find($id);
+      $deudaS->nombre = $request->nombreDedit;
+      $deudaS->importe = $request->importDedit;
+      $deudaS->save();
+      $deudas = Deuda::orderBy('id', 'ASC')->get();
+      if ($request->ajax()) {
+        return response()->json(view('rrhh::app1.servicio.deudataR',compact('deudas'))->render());
+      }
+    }
+
+    public function changeTypePers(Request $request){ ////change Type Person
+      $messages = [
+        'i_typeusplsv.required' => 'El campo es requerido',
+        'i_typeusplsv.in' => 'No pertenece a la lista',
+        'i_typeContrplsv.required' => 'El campo es requerido',
+      ];
+      $request->validate([
+        'i_typeusplsv' => 'required|in:jx_permpers,nx_nopermcf,jv_naler,gx_njas,cx_sultdoc,cx_sultadm',
+        'i_typeContrplsv' => 'required',
+      ], $messages);
+      $listType = ['jx_permpers' => 'permanente', 'nx_nopermcf' => 'no_permanente', 'jv_naler' => 'jornalero', 'gx_njas' => 'granjas', 'cx_sultdoc' => 'consultor_docente', 'cx_sultadm' => 'consultor_administrativo'];
+      $listPresups = ['jx_suelds' => 'presup_sueldo','hx_noraris' => 'presup_honorarios','js_rviceste' => 'servicio_te','gx_difsuel' => 'diferencia_sueldo'];
+      $cabecera = Cabezera::find($request->idperstyppl);
+      $cabecera->tipo = $listType[$request->i_typeusplsv];
+      $cabecera->tipo_presup = $listPresups[$request->i_typeContrplsv];
+      $cabecera->save();
+      $cabecera = Cabezera::where('status','valido')->orderby('id', 'ASC')->paginate(10);
+      if($request->ajax()){
+        return [
+          'cabecera' => view('rrhh::app1.servicio.PresuRendDa')->with(compact('cabecera'))->render(),
+          'next_page' => $cabecera->nextPageUrl()
+        ];
+      }
+    }
+
+    public function listrepofortypepl(Request $request){
+
+      $me = json_encode($request->myCheckboxes);
+
+      $cars_together = implode(", ", $me);
+
+      dd($cars_together);
+
+      $thisresp = Cabezera::whereIn('tipo',['$request->myCheckboxes'])->get();
+
+
+      dd($thisresp);
+
+      $a=1;
+      $pp = $request->myCheckboxes;
+      $listTyPresp = $request->mytypPresp;
+
+      //dd($request->myCheckboxes);
+      $listType = ['jx_permpers' => 'permanente', 'nx_nopermcf' => 'no_permanente', 'jv_naler' => 'jornalero', 'gx_njas' => 'granjas', 'cx_sultdoc' => 'consultor_docente', 'cx_sultadm' => 'consultor_administrativo'];
+
+
+
+
+      dd($contrato);
+
+      $total=[];
+      foreach ($request->myCheckboxes as $qwe){
+        $conect = Cabezera::where('tipo',$listType[$qwe])->get();
+        $details = $conect->count();
+        array_push($total,[
+          'counter' => $details,
+          'Tipo' => $listType[$qwe],
+        ]);
+      }
+      return response()->json([
+        'aass' => $total,
+        'qqq' => $request->myCheckboxes,
+
+        'ViewRegPl' => view('rrhh::complement.appendRepReg',compact('a','pp'))->render()
+
+      ]);
+      //dd($total);
+    }
+
+
+    public function aaaaaaaa($array = array()){
+      //if($request->typ_down == 'excel'){
+
+        dd($array);
+
+        return \Excel::download(new ExcForType($request->me), 'Reporte_por_Tipo.xlsx');
+
+     //}
+    }
+
+
+
+    /////////////////////////////////////////////////////////
+    public function rendPl(Request $request, $id){
+
+
+      $messages = [
+        'umayorSend.required' => 'El campo es obligado',
+        'haberSend.required' => 'El campo es obligado',
+        'ObvsPlSend.required' => 'El campo es obligado',
+        ];
+        $request->validate([
+          'umayorSend'=> 'required',
+          'haberSend'=> 'required',
+          'ObvsPlSend'=> 'required',
+        ],$messages);
+
+      $firm = $request->firmPl;
+      $nombDeuPers=$request->nameDeud;
+      $importeEfectivo=$request->efectivImp;
+      $category= ($request->categSend > 0) ? $request->categSend : 0 ;
+      $deudass=[];
+      $listTypeContr = ['jx_permpers' => 'permanente', 'nx_nopermcf' => 'no_permanente', 'jv_naler' => 'jornalero', 'gx_njas' => 'granjas', 'cx_sultdoc' => 'consultor_docente', 'cx_sultadm' => 'consultor_administrativo'];
+      $listPresups = ['jx_suelds' => 'presup_sueldo','hx_noraris' => 'presup_honorarios','js_rviceste' => 'servicio_te','gx_difsuel' => 'diferencia_sueldo'];
+
+      if($nombDeuPers != []){
+        foreach($nombDeuPers as $key => $deu ){
+          $object = (object)$deu;
+          $de = Deuda::where('id', $object->nombre)->get();
+
+          if($object->tipo === '1'){
+            array_push($deudass,[
+              'id' => $de[0]->id,
+              'nombre' => $de[0]->nombre,
+              'importe' => str_replace(",", "", (number_format((($request->haberSend)*($object->efectivo)/100),2,".",",")))
+            ]);
+          }elseif($object->tipo === '2'){
+            array_push($deudass,[
+              'id' => $de[0]->id,
+              'nombre' => $de[0]->nombre,
+              'importe' => str_replace(",", "", number_format((($request->totalSend)*($object->efectivo)/100),2,".",","))
+            ]);
+          }
+        }
+      }
+      if($importeEfectivo != []){
+        foreach($importeEfectivo as $key => $deuEfectivo ){
+          $object = (object)$deuEfectivo;
+          array_push($deudass,[
+            'id' => null,
+            'nombre' => $object->nombre,
+            'importe' => str_replace(",", "", number_format($object->efectivo,2,".",","))
+          ]);
+        }
+      }
+
+      $conti=[];
+      $ciPers=$request->ciSend;
+      $persona = Personal::where('ci',$ciPers)->first();
+      $mencSave = new Cabezera();
+      $mencSave->nro = $request->nroPlSend;
+      $mencSave->personal_id = $persona->id;
+      $mencSave->un_mayor = $request->umayorSend;
+      $mencSave->tipo = $listTypeContr[$request->type_pers];
+      $mencSave->tipo_presup = $listPresups[$request->type_presups];
+      // if($type_pers == 'jx_permpers'){
+      //   $mencSave->tipo = 'permanente';
+      // }elseif($type_pers == 'nx_nopermcf'){
+      //   $mencSave->tipo = 'no_permanente';
+      // }elseif($type_pers == 'jv_naler'){
+      //   $mencSave->tipo = 'jornalero';
+      // }elseif($type_pers == 'gx_njas'){
+      //   $mencSave->tipo = 'granjas';
+      // }elseif($type_pers == 'cx_sultdoc'){
+      //   $mencSave->tipo = 'consultor_docente';
+      // }elseif($type_pers == 'cx_sultadm'){
+      //   $mencSave->tipo = 'consultor_administrativo';
+      // }
+
+
+
+      //$mencSave->un_dependiente = $request->udepenSend;
+      $mencSave->fecha = $request->FecNowSend;
+
+      $code = Cabezera::get();
+      if(!$code->first()){
+        $key = '';
+        $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ0123456789';
+        $max = strlen($pattern)-1;
+        for($i=0;$i < 5;$i++) $key .= $pattern[mt_rand(0,$max)];
+        $mencSave->codigo = $key;
+      }else{
+        foreach($code as $cod){
+          $cod = $cod->codigo;
+          $key = '';
+          $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ0123456789';
+          $max = strlen($pattern)-1;
+          for($i=0;$i < 5;$i++) $key .= $pattern[mt_rand(0,$max)];
+          if($cod != $key){
+            $mencSave->codigo = $key;
+            break;
+          }
+        }
+      }
+      //dd($mencSave);
+      $mencSave->save();
+      $mencSave->menciones()->attach([
+        $mencSave['id'] => [
+        'mencion_id' => $request->idmenci,
+        'mencion_log' => $request->mencionSend,
+        'haber' => $request->haberSend,
+        'total' => $request->totalSend,
+        'deducciones' => $request->totalDeducSend,
+        'liqu_pagable' => $request->liquPSend,
+        'monto_literal' => $request->letter_cPl,
+        'observacion' => $request->ObvsPlSend,
+        'firma' => $request->firmPl,
+        'categoria' => $category
+      ]]);
+      foreach($deudass as $key => $deu ){
+        $AllDeudas = (object)$deu;
+        $mencSave->deudausers()->attach([
+          $mencSave['id'] => [
+          'deuda_id' => $AllDeudas->id,
+          'nombre_importe_log' => $AllDeudas->nombre ,
+          'costo_importe_log' => $AllDeudas->importe
+          ]
+        ]);
+      }
+      return 'successly';
+    }
+
+    public function lookpl($id){
+      $key = '';
+      $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ0123456789';
+      $max = strlen($pattern)-1;
+      for($i=0;$i < 5;$i++) $key .= $pattern[mt_rand(0,$max)];
+      $gestAnt = Gestion::pluck('fin_gestion')->last();
+      $gestAnt = new Date($gestAnt);
+      $yearGes = $gestAnt->format('Y');
+      $cab = Cabezera::findOrFail($id);
+      $al_data = $cab->menciones[0]->pivot;
+      $user = Personal::findOrFail($cab->personal_id);
+      $al_deu = Deudauser::where('cabezera_id',$id)->get();
+      $lettDate = new Date($cab->fecha);
+      $centPers = number_format($al_data->total,2,".","");
+      $decimales = explode('.',$centPers);
+      $exiVa = isset($decimales[1]);
+      $centPers = $exiVa ? $decimales[1] : '00';
+
+      //dd($cab->menciones[0]->pivot->haber );
+
+      return response()->json(view('rrhh::app1.servicio.lookPlanilla',compact('user','al_data','cab','al_deu','yearGes','centPers','lettDate','key'))->render());
+    }
+
+    public function changstatus(Request $request){
+      $cabecera = Cabezera::find($request->id_stat);
+      $cabecera->status = 'invalido';
+      $cabecera->save();
+      $cabecera = Cabezera::where('status','valido')->orderby('id', 'ASC')->paginate(10);
+      if($request->ajax()){
+        return [
+          'cabecera' => view('rrhh::app1.servicio.PresuRendDa')->with(compact('cabecera'))->render(),
+          'next_page' => $cabecera->nextPageUrl()
+        ];
+      }
+    }
+
+    public function printpint($id){
+      $gestAnt = Gestion::pluck('fin_gestion')->last();
+      $gestAnt = new Date($gestAnt);
+      $yearGes = $gestAnt->format('Y');
+      $cab = Cabezera::findOrFail($id);
+      $al_data = $cab->menciones[0]->pivot;
+      $user = Personal::findOrFail($cab->personal_id);
+      $al_deu = Deudauser::where('cabezera_id',$id)->get();
+      $lettDate = new Date($cab->fecha);
+      $centPers = number_format($al_data->total,2,".","");
+      $decimales = explode('.',$centPers);
+      $exiVa = isset($decimales[1]);
+      $centPers = $exiVa ? $decimales[1] : '00';
+      return \PDF::loadView('rrhh::app1.servicio.ReportPla',compact('user','al_data','cab','al_deu','yearGes','centPers','lettDate'))
+        ->setPaper('legal', 'portrait')
+        ->download("Planilla Nro $cab->nro.pdf");
+
+      //return view('rrhh::app1.servicio.ReportPla',compact('user','al_data','cab','al_deu','yearGes','centPers','lettDate'));
+    }
+
+    public function previewSPl(Request $request){
+      //dd($request->all());
+      $messages = [
+        'umayorSend.required' => 'El campo es obligado',
+        //'udepenSend.required' => 'El campo es obligado',
+        'haberSend.required' => 'El campo es obligado',
+        'ObvsPlSend.required' => 'El campo es obligado',
+        ];
+        $request->validate([
+          'umayorSend'=> 'required',
+         // 'udepenSend'=> 'required',
+          'haberSend'=> 'required',
+          'ObvsPlSend'=> 'required',
+        ],$messages);
+
+      $gestAnt = Gestion::pluck('fin_gestion')->last();
+      $gestAnt = new Date($gestAnt);
+      $yearGes = $gestAnt->format('Y');
+      //$lisPresups = ['jx_suelds' => 'presup_sueldo','hx_noraris' => 'presup_honorarios','js_rviceste' => 'servicio_te','gx_difsuel' => 'diferencia_sueldo'];
+      $lisPresups = ['jx_suelds' => 'Sueldo','hx_noraris' => 'Honorarios','js_rviceste' => 'Servicio De Té','gx_difsuel' => 'Diferencia De Sueldo'];
+      // $dateNow= Date::now();
+      // $mencions = Mencion::get();
+      // $deudas = Deuda::get();
+      $nombDeuPers=$request->nameDeud;
+      $importeEfectivo=$request->efectivImp;
+
+      $conti=[];
+      $allconti=[];
+
+      if($nombDeuPers != []){
+        foreach($nombDeuPers as $key => $deu ){
+
+          $object = (object)$deu;
+          $de = Deuda::where('id', $object->nombre)->get();
+
+          if($object->tipo === '1'){
+            array_push($conti,[
+              'id' => $de[0]->id,
+              'nombre' => $de[0]->nombre,
+              'importe' => number_format((($request->haberSend)*($object->efectivo)/100),2,",",".")
+            ]);
+          }elseif($object->tipo === '2'){
+            array_push($conti,[
+              'id' => $de[0]->id,
+              'nombre' => $de[0]->nombre,
+              'importe' => number_format((($request->totalSend)*($object->efectivo)/100),2,".",",")
+            ]);
+          }
+        }
+      }
+      if($importeEfectivo != []){
+        foreach($importeEfectivo as $key => $deuEfectivo ){
+          $object = (object)$deuEfectivo;
+          array_push($conti,[
+            'id' => null,
+            'nombre' => $object->nombre,
+            'importe' =>  number_format(($object->efectivo),2,".",",")
+          ]);
+        }
+      }
+      $namePers=$request->nameSend;
+      $patPers=$request->paternoSend;
+      $matPers=$request->maternoSend;
+      $ciPers=$request->ciSend;
+      $ciExPers=$request->ciExSend;
+      $unmayPers=$request->umayorSend;
+      $type_pers = $request->type_pers;
+      $type_presups = $lisPresups[$request->type_presups];
+      //$undepePers=$request->udepenSend;
+      $nplaPers=$request->nroPlSend;
+      //$nplaPers = str_pad($nplaPers, 4, "0", STR_PAD_LEFT);
+      $fechNowPers=$request->FecNowSend;
+      $fechNowPers=new Date($fechNowPers);
+
+      $haberPers=number_format($request->haberSend,2,".",",");
+      $categPers=number_format($request->categSend,2,".",",");
+
+      $mencPers=$request->mencionSend;
+      $numberletter=$request->totalSend;
+      $totalPers=number_format($request->totalSend,2,".",",");
+      $totdeduPers=number_format($request->totalDeducSend,2,".",",");
+      $lipagPers=number_format($request->liquPSend,2,".",",");
+      $obvsPers=$request->ObvsPlSend;
+      $letterPers=$request->letter_cPl;
+
+      $totPe = number_format($numberletter,2,".","");
+      $decFtotP = explode('.',$totPe);
+      $exiVa = isset($decFtotP[1]);
+      $centPers = $exiVa ? $decFtotP[1] : '00';
+
+
+      return response()->json(view('rrhh::app1.servicio.previewSPl', compact('namePers','patPers','matPers','ciPers','ciExPers','unmayPers','nplaPers','yearGes','fechNowPers','haberPers','categPers','mencPers','totalPers', 'totdeduPers','lipagPers','obvsPers','letterPers','type_pers','type_presups','centPers','conti'))->render());
+
+    }
+
+    public function OpenDates(Request $request){
+      $title= 'Extraer Reporte';
+      return response()->json([
+        'formDateTwo' => view('rrhh::app1.servicio.RepsearchDate')->render(),
+        'title' => $title
+      ]);
+    }
+
+    public function SearchDatwo(Request $request){
+      $messages = [
+        'date1.required' => 'El campo es requerido',
+        'date1.date' => 'El campo debe ser una fecha',
+        'date2.required' => 'El campo es requerido',
+        'date2.date' => 'El campo debe ser una fecha',
+        'date2.after_or_equal' => 'la fecha fin debe ser mayor o igual a la fecha inicio'
+      ];
+      $request->validate([
+        'date1' => 'required|date',
+        'date2' => 'required|date|after_or_equal:date1',
+      ], $messages);
+
+      $from = $request->date1;
+      $to = $request->date2;
+      // $cabtwoD = Cabezera::whereBetween('fecha', [$from, $to])->get();
+      $cabtwoD = Cabezera::whereDate('fecha', '>=', $from)->whereDate('fecha', '<=', $to)->where('status','valido')->get();
+      return response()->json([
+        'countCabD' => count($cabtwoD),
+        'viewRetur' => view('rrhh::complement.appendates',compact('cabtwoD','from','to'))->render()
+      ]);
+    }
+
+    public function ssss($date1, $date2){
+      $from = $date1;
+      $to = $date2;
+      $dateF = strtotime($from);
+      $fromdate = new Date($dateF);
+      $newFrom = $fromdate->format('d \\d\\e F\\ \\d\\e\\l Y');
+      $dateT = strtotime($to);
+      $todate = new Date($dateT);
+      $newTo = $todate->format('d \\d\\e F\\ \\d\\e\\l Y');
+      $us = Auth::user();
+      $dateNow= Date::now();
+      $cabtwoD = Cabezera::whereDate('fecha', '>=', $from)->whereDate('fecha', '<=', $to)->where('status','valido')->get();
+      if(!\File::exists(public_path('back_reports/rrhh_planillapresupuestaria'))){
+        \File::makeDirectory(public_path('back_reports/rrhh_planillapresupuestaria'),0777,true);
+      }
+      $path = public_path('back_reports/rrhh_planillapresupuestaria/');
+      $nameGenerate = $dateNow->format('d_m_Y') . Auth::user()->ci . '_' . uniqid(rand());
+      $nombre_archivo = $nameGenerate . '_' . '.pdf';
+      $pdf = \PDF::loadView("rrhh::app1.servicio.repTotalPl",compact('us','dateNow','newFrom','newTo','cabtwoD'))->setPaper('letter', 'portrait');
+      $pdf->getDomPDF()->set_option("enable_php", true);
+      $pdf->save($path . '/' . $nombre_archivo);
+      $moveLoc = public_path('back_reports/rrhh_planillapresupuestaria/'.$nombre_archivo);
+      \Storage::disk('reportesftp')->put('back_reports/rrhh_planillapresupuestaria/'.$nombre_archivo, \File::get($moveLoc));
+      return $pdf->download($nombre_archivo);
+    }
+    ///reporte por tipo Extraer
+    public function SearchablePlForType(Request $request){
+
+      if($request->choice === 'Jx_all'){
+        $ResponseData = Cabezera::where('status','valido')->get();
+        $thischoice = $request->choice;
+        return response()->json(['ViewRegPl' => view('rrhh::complement.appendRepReg',compact('ResponseData','thischoice'))->render()]);
+      }elseif($request->choice === 'Jx_entrg'){
+        $ResponseData = Cabezera::whereNotNull('fecha_entrega')->where('status','valido')->get();
+        $thischoice = $request->choice;
+        return response()->json(['ViewRegPl' => view('rrhh::complement.appendRepReg',compact('ResponseData','thischoice'))->render()]);
+      }elseif($request->choice === 'Jx_noentreg'){
+        $ResponseData = Cabezera::whereNull('fecha_entrega')->where('status','valido')->get();
+        $thischoice = $request->choice;
+        return response()->json(['ViewRegPl' => view('rrhh::complement.appendRepReg',compact('ResponseData','thischoice'))->render()]);
+      }
+    }
+
+    public function downregplwty($type, $mode){ //down_repPl_Entreg
+      $thisUser = Auth::user()->name;
+      $thisDateNow = Date::now()->format('d \\d\\e F\\ \\d\\e\\l Y');
+      $nameGenerate = Date::now()->format('d_m_Y'). '_' . Auth::user()->ci . '_' . uniqid(rand());
+      $nombre_archivo = $nameGenerate . '_' . '.pdf';
+
+      if($type == 'excel'){
+        return \Excel::download(new ExpEntrePl($mode,$thisUser,$thisDateNow), 'PERSUPUESTOS_INDIVIDUALES.xlsx');
+      }elseif($type == 'pdf'){
+        if($mode === 'Jx_all'){
+          $respData = Cabezera::where('status','valido')->get();
+          $pdf = \PDF::loadView("rrhh::complement.reportPdFregis",compact('respData','thisUser','thisDateNow'));
+          return $pdf->download($nombre_archivo);
+        }elseif($mode === 'Jx_entrg'){
+          $respData = Cabezera::whereNotNull('fecha_entrega')->where('status','valido')->get();
+          $pdf = \PDF::loadView("rrhh::complement.reportPdFregis",compact('respData','thisUser','thisDateNow'));
+          return $pdf->download($nombre_archivo);
+        }elseif($mode === 'Jx_noentreg'){
+          $respData = Cabezera::whereNull('fecha_entrega')->where('status','valido')->get();
+          $pdf = \PDF::loadView("rrhh::complement.reportPdFregis",compact('respData','thisUser','thisDateNow'));
+          return $pdf->download($nombre_archivo);
+        }
+      }
+    }
+
+    public function asdasd(){
+      return \Excel::download(new ExpEntrePl, 'SIN_FECHA_NAC.xlsx');
+    }
+    ////report excel
+    public function exportUsers(){
+      return \Excel::download(new UsersExport, 'PERSUPUESTOS_INDIVIDUALES.xlsx');
+      // $ff=$request->ff;
+      // $fi=$request->fi;
+      // $op=$request->option;
+      // $us = Auth::user();
+      // $dateNow= Date::now();
+      // $nameGenerate = $dateNow->format('d_m_Y') .'_'. Auth::user()->ci . '_' . uniqid(rand());
+      // $doc=$nameGenerate.'.'.'xlsx';
+      //$data= Excel::store(new UsersExport($ff,$fi,$op), $doc,'local6');
+    }
+
+
+    /////add send_obser planill presup
+    public function openformsendpl(Request $request){
+      $i_planEntreg = $request->i_entrPl;
+      if($request->verif_entr){
+        $verifi_entr = Cabezera::findOrFail($i_planEntreg);
+        $per_plentre = Personal::findOrFail($verifi_entr->personal_id);
+        $typeContrat = ['permanente' => 'Permanente', 'no_permanente' => 'No permanente', 'jornalero' => 'Jornalero', 'granjas' => 'Granjas', 'consultor_docente' => 'Consultor Docente', 'consultor_administrativo' => 'Consultor Administrativo'];
+        $typePresup = ['presup_sueldo' => 'Sueldo','presup_honorarios' => 'Honorarios','servicio_te' => 'Servicio de Té','diferencia_sueldo' => 'Diferencia De Sueldo'];
+        return response()->json([
+          'stat' => true,
+          //'viewHtmlthis' => view('rrhh::complement.detailsEntrPl',compact('verifi_entr','per_plentre','typePresup'))->render()
+          'viewHtmlthis' => view('rrhh::complement.detailsEntrPl',['verifi_entr' => $verifi_entr,'per_plentre' => $per_plentre,'typePresup' => $typePresup[$verifi_entr->tipo_presup], 'typeContrat' => $typeContrat[$verifi_entr->tipo]])->render()
+        ]);
+      }else{
+        return response()->json([
+          'stat' => false,
+          'resView' => view('rrhh::complement.formSendPl',compact('i_planEntreg'))->render()]);
+      }
+    }
+
+    public function entregaSendPl(Request $request){
+      $messages = [
+        'date_entreg.required' => 'ingrese una fecha',
+        'time_entrega.required' => 'ingrese una hora',
+        'oficina.required' => 'El campo es obligado',
+      ];
+      $request->validate([
+        'date_entreg'=> 'required|date',
+        'time_entrega'=> 'required',
+        'oficina'=> 'required|',
+      ],$messages);
+
+      $en_trPl = Cabezera::findOrFail($request->i_dPlEntr);
+      $en_trPl->fecha_entrega = $request->date_entreg;
+      $en_trPl->hora_entrega = $request->time_entrega;
+      $en_trPl->oficina_entrega = $request->oficina;
+      $en_trPl->observacion_entrega = $request->observation;
+      $en_trPl->save();
+
+      $cabecera = Cabezera::where('status','valido')->orderby('id', 'ASC')->paginate(10);
+      if($request->ajax()){
+        return [
+          'i_d' => $request->i_dPlEntr,
+          'cabecera' => view('rrhh::app1.servicio.PresuRendDa')->with(compact('cabecera'))->render(),
+          'next_page' => $cabecera->nextPageUrl()
+        ];
+      }
+    }
+
+    //////Bajas medicas/////
+    public function indbajmed(Request $request){
+      $Re_viEwPlBj = PlanillaMbajas::orderby('id','ASC')->paginate(10);
+      if($request->ajax()){
+        return [
+          'Re_viEwPlBj' => view('rrhh::complement.rendTabPlBjs',compact('Re_viEwPlBj'))->render(),
+          'next_page' => $Re_viEwPlBj->nextPageUrl()
+        ];
+        return response()->json();
+      }else{
+        return view('rrhh::app1.bajasmedicas.index',compact('Re_viEwPlBj'));
+      }
+    }
+    ///Shw_Pla_Cr_modal_title PL
+    public function SeeCrPlaMod(Request $request){
+      $title = "Create new Plan";
+      return response()->json(view('rrhh::app1.bajasmedicas.ComplMdShCrPl',compact('title'))->render());
+    }
+    //Sav_Pl_New
+    public function SvePlneWBjs(Request $request){
+      $plbjsmed = new PlanillaMbajas();
+      $J_Xmonths = [1 => "enero", 2 => "febrero", 3 => "marzo", 4 => "abril", 5 => "mayo", 6 => "junio", 7 => "julio", 8 => "agosto", 9 => "septiembre", 10 => "octubre", 11 => "noviembre", 12 => "diciembre"];
+      $result = [];
+      $code = PlanillaMbajas::get();
+      if(!$code->first()){
+        $key = ''; $pattern='1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ0123456789';
+        $max = strlen($pattern)-1;
+        for($i=0;$i < 5;$i++) $key .= $pattern[mt_rand(0,$max)];
+        $plbjsmed->code = $key;
+      }else{
+        foreach($code as $cod){
+          $cod = $cod->code; $key='';$pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ0123456789';
+          $max = strlen($pattern)-1;
+          for($i=0;$i < 5;$i++) $key .= $pattern[mt_rand(0,$max)];
+          if($cod != $key){$plbjsmed->code = $key;
+            break;
+          }
+        }
+      }
+      foreach ($J_Xmonths as $key => $value) {
+        if (in_array($key, array($request->J_MnthSv))) {
+          $result[$key] = $value;
+        }
+      }
+      $plbjsmed->titleComplet = $request->J_resTitl;
+      $plbjsmed->fecha = implode("",$result);
+      $plbjsmed->type = $request->R_SelNwPlSv;
+      $plbjsmed->year = $request->J_YxarSv;
+      $plbjsmed->state = "valido";
+      $plbjsmed->save();
+      $Re_viEwPlBj = PlanillaMbajas::orderby('id','ASC')->paginate(10);
+      return response()->json(view('rrhh::complement.rendTabPlBjs',compact('Re_viEwPlBj'))->render());
+    }
+    //view Form Cr_addUs
+    public function resolvViewUsPl(Request $request){
+      $J_IxDpL = $request->J_IxDpL;
+      return response()->json(['J_IxDpL' => $J_IxDpL,]);
+    }
+    public function creatbajmed(Request $request, $id){
+      $P_lId = $id;
+      $T_plSeeNp = PlanillaMbajas::where('id',$P_lId)->first();
+      $P_sonPlLis = PersonaMbaja::where('plbajas_id',$P_lId)->orderby('id','ASC')->get();
+      return view('rrhh::app1.bajasmedicas.CrBjsmed',compact('P_lId','P_sonPlLis','T_plSeeNp'));
+    }
+    //searcUs_Us
+    public function search(Request $request){
+      $word = strtoupper($request->J_PerSe);
+      $user = Personal::query()->where($request->J_SelJx, 'LIKE','%'. $word.'%')->get();
+      return response()->json(['j_ToXDt' => $user]);
+    }
+    //saveUs_add_Person_PL
+    public function SveDjsMed(Request $request){
+      $messages = [
+        'J_Itm.required' => 'El campo es obligado',
+        'J_Itm.numeric' => 'Solo se permite Números',
+        'J_Xobs.required' => 'El campo es obligado',
+        'J_FromD.required' => 'El campo es obligado',
+        'J_ToD.required' => 'El campo es obligado',
+        'fromW.required' => 'El campo es obligado',
+        'M_gan.required' => 'El campo es obligado',
+        'M_gan.numeric' => 'Solo se permite números',
+        'p_cent.required' => 'El campo es obligado',
+        'p_cent.in' => 'valor no permitido',
+        'J_NuxDys.required' => 'El campo es obligado',
+        'J_NuxDys.numeric' => 'Solo se permite Números'
+      ];
+      $request->validate([
+        'J_Itm'=> 'required|numeric',
+        'J_Xobs'=> 'required',
+        'J_FromD'=> 'required',
+        'J_ToD'=> 'required',
+        'fromW'=> 'required',
+        'M_gan'=> 'required|numeric',
+        'p_cent'=> 'required|in:75,90',
+        'J_NuxDys'=> 'required|numeric',
+      ],$messages);
+      $S_vePlBjs = new PersonaMbaja();
+      $P_lId = $request->J_PlanBjs;
+      $S_vePlBjs->plbajas_id = $request->J_PlanBjs;
+      $S_vePlBjs->id_personal = $request->J_NumUsId;
+      $S_vePlBjs->item = $request->J_Itm;
+      $S_vePlBjs->Names = $request->J_Nme;
+      $S_vePlBjs->Surname_P = $request->J_SuNmP;
+      $S_vePlBjs->Surname_M = $request->J_SuNmM;
+      $S_vePlBjs->observacion = $request->J_Xobs;
+      $S_vePlBjs->date_ini = $request->J_FromD;
+      $S_vePlBjs->date_fin = $request->J_ToD;
+      $S_vePlBjs->date_welc = $request->fromW;
+      $S_vePlBjs->total_g = $request->M_gan;
+      $S_vePlBjs->porcent = $request->p_cent;
+      $S_vePlBjs->t_porcentGan = $request->M_ganPorc;
+      $S_vePlBjs->n_dias = $request->J_NuxDys;
+      $S_vePlBjs->total = $request->T_talS;
+      $S_vePlBjs->save();
+      $P_sonPlLis = PersonaMbaja::where('plbajas_id',$request->J_PlanBjs)->orderby('id','ASC')->get();
+      $T_plSeeNp = PlanillaMbajas::where('id',$request->J_PlanBjs)->first();
+      return response()->json(view('rrhh::complement.PerBjsRenAdd',compact('P_sonPlLis','P_lId','T_plSeeNp'))->render());
+    }
+    //GetEdPers
+    public function GetEdPersPl(Request $request){
+      $SelPerPl = PersonaMbaja::where('id',$request->J_XgIdPers)->first();
+      $IdPlan = planillaMbajas::where('id',$SelPerPl->plbajas_id)->first();
+      return response()->json(['SelPerPl'=>$SelPerPl,'I_dPlNow'=>$IdPlan->id]);
+    }
+    public function SavEdPlUsper(Request $request){
+      $SelPerUpda = PersonaMbaja::where('id',$request->Per_idUpNowUp)->first();
+      $P_lId = $request->Pl_idUpPer;
+      $i_Dpersonal = $request->Per_Id_personal!=null ? $request->Per_Id_personal : null;
+      $SelPerUpda->update(['plbajas_id' => $request->Pl_idUpPer,'id_personal' => $i_Dpersonal,'item' => $request->J_Itm_Up,'Names' => $request->J_Nme_Up,'Surname_P' => $request->J_SuNmP_Up,'Surname_M' => $request->J_SuNmM_Up,'observacion' => $request->J_Xobs_Up,'date_ini' => $request->J_FromD_Up,'date_fin' => $request->J_ToD_Up,'date_welc' => $request->fromW_Up,'total_g' => $request->M_gan_Up,'porcent' => $request->p_cent_Up,'t_porcentGan' => $request->M_ganPorc_Up,'n_dias' => $request->J_NuxDys_Up,'total' => $request->T_talS_Up,]);
+      $P_sonPlLis = PersonaMbaja::where('plbajas_id',$request->Pl_idUpPer)->orderby('id','ASC')->get();
+      $T_plSeeNp = PlanillaMbajas::where('id',$request->Pl_idUpPer)->first();
+      return response()->json(['Vie_JxsEuS' => view('rrhh::complement.PerBjsRenAdd',compact('P_sonPlLis','P_lId','T_plSeeNp'))->render(),'T_plSeeNp' => $T_plSeeNp]);
+    }
+    //deletePersonPl
+    public function delUsPbjsMed(Request $request,$id){
+      $P_UsJxDelsel = PersonaMbaja::findOrFail($id);
+      $P_UsJxDelsel->delete();
+      $P_sonPlLis = PersonaMbaja::where('plbajas_id',$request->J_IPls4per)->get();
+      $T_plchanGSta = PlanillaMbajas::where('id',$request->J_IPls4per)->first();
+      if(count($P_sonPlLis) === 0){
+        $T_plchanGSta->update(['path'=>null,'state_success'=>'incompleto']);
+        return response()->json('non_UsersInList');
+      }else{
+        return response()->json("Delete User Complete!");
+      }
+    }
+    public function PrintLife(Request $request){
+      $dateNow= Date::now();
+      $T_plrendPrin = PlanillaMbajas::where('id',$request->Iplsavusrs)->first();
+      //$T_Jxtype = $T_plrendPrin->type;
+      $D_teJpl = new Date($T_plrendPrin->creted_at);
+      $D_teJpl = $D_teJpl->format('d \\d\\e F\\ \\d\\e\\l Y');
+      $J_xUsperPl = PersonaMbaja::where('plbajas_id',$request->Iplsavusrs)->orderby('id','ASC')->get();
+      $S_GanToPl = $J_xUsperPl->sum('total_g');
+      $S_GanPorToPl = $J_xUsperPl->sum('t_porcentGan');
+      $S_DysPlT = $J_xUsperPl->sum('n_dias');
+      $S_TlesPl = $J_xUsperPl->sum('total');
+      if(!\File::exists(public_path('back_reports/rrhh_bajasmedicas'))){
+        \File::makeDirectory(public_path('back_reports/rrhh_bajasmedicas'),0777,true);
+      }
+      $path = public_path('back_reports/rrhh_bajasmedicas/');
+      $nameGenerate = $T_plrendPrin->type.'_'.Auth::user()->ci . '_' . uniqid(rand()).'J_'.$dateNow->format('d_m_Y');
+      $nombre_archivo = $nameGenerate . '_' . '.pdf';
+      if($T_plrendPrin->path){
+        \File::delete(public_path($T_plrendPrin->path));
+        $T_plrendPrin->update(["path"=>null]);
+        $pdf = \PDF::loadView('rrhh::app1.bajasmedicas.repbjsmed',compact('J_xUsperPl','T_plrendPrin','D_teJpl','S_GanToPl','S_GanPorToPl','S_DysPlT','S_TlesPl'))->setPaper('letter', 'portrait');
+        $pdf->getDomPDF()->set_option("enable_php", true);
+        $pdf->save($path . '/' . $nombre_archivo);
+        $T_plrendPrin->update(['path'=>'back_reports/rrhh_bajasmedicas/'.$nombre_archivo,'state_success'=>'completo']);
+        return response()->json(['J_IdPl' => $T_plrendPrin->id]);
+      }else{
+        $pdf = \PDF::loadView('rrhh::app1.bajasmedicas.repbjsmed',compact('J_xUsperPl','T_plrendPrin','D_teJpl','S_GanToPl','S_GanPorToPl','S_DysPlT','S_TlesPl'))->setPaper('letter', 'portrait');
+        $pdf->getDomPDF()->set_option("enable_php", true);
+        $pdf->save($path . '/' . $nombre_archivo);
+        $T_plrendPrin->update(['path'=>'back_reports/rrhh_bajasmedicas/'.$nombre_archivo,'state_success'=>'completo']);
+        return response()->json(['J_IdPl' => $T_plrendPrin->id]);
+
+      }
+
+
+      // $moveLoc = public_path('back_reports/rrhh_bajasmedicas/'.$nombre_archivo);
+      // \Storage::disk('reportesftp')->put('back_reports/rrhh_bajasmedicas/'.$nombre_archivo, \File::get($moveLoc));
+      // return $pdf->download($nombre_archivo);
+    }
+    //downfileplbjas
+    public function downrepspl(Request $request,$id){
+      $J_sSdown = PlanillaMbajas::where('id',$id)->first();
+      $headers = array('Content-Type: application/pdf',);
+      return \Response::download(public_path($J_sSdown->path), 'Planilla_mes_'.$J_sSdown->fecha.'.pdf', $headers);
+    }
+    ///
+    public function DelPlanWus(Request $request){
+      $S_elPl = PlanillaMbajas::findOrFail($request->I_dSelplD);
+      \File::delete(public_path($S_elPl->path));
+      $S_elPl->delete();
+      $Re_viEwPlBj = PlanillaMbajas::orderby('id','ASC')->paginate(10);
+      return [
+        'Re_viEwPlBj' => view('rrhh::complement.rendTabPlBjs',compact('Re_viEwPlBj'))->render(),
+        'next_page' => $Re_viEwPlBj->nextPageUrl()
+      ];
+    }
+
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+
+
+
+}

@@ -1,0 +1,11 @@
+.panel_left {
+  width: 82%;
+  height: 580px;
+  position: fixed;
+  right: -82%;
+  top: 59px;
+  background: rgba(203, 222, 237, 0.9);
+  padding: 5px;
+  -webkit-transition: right .5s;
+  transition: right .5s;
+}
